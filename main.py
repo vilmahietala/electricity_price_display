@@ -64,10 +64,8 @@ def fetch_and_print_price():
     # Print the hour and price if the variable 'price_data' returns a dictionary 
     if isinstance(price_data, dict):
         print_data = (f"KELLO {current_hour}", f"HINTA {price_data['price']} SNT")
-        print(print_data)
         return print_data
     else:
-        print(price_data)
         return price_data
     
 
@@ -78,13 +76,12 @@ def display_on_lcd(data):
     Parameters:
     - data: A tuple of two strings. The first string will be shown on the first row 
             of the LCD screen and the second string will be shown on the second row.
+            //OR// 
+            A string containing an error message. The string will be shown on the first row.
     
     Returns:
     - None: This function doesn't return any values. It directly updates the LCD screen.
 
-    Notes:
-    - The function assumes the LCD is properly connected and initialized.
-    - If the LCD is not connected or there's a communication issue, this function may raise an error.
     """
 
     lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, 
@@ -103,11 +100,11 @@ def display_on_lcd(data):
         lcd.write_string(data[1])
     else:
         lcd.cursor_pos = (0, 0)
-        lcd.write_string(data[:16])  # Ensure it fits within 16 characters
+        lcd.write_string(data[:16]) 
         
-        # If needed, clear the second row to prevent ghost text
+        # Clear second row  
         lcd.cursor_pos = (1, 0)
-        lcd.write_string(" " * 16)  # Clear second row     
+        lcd.write_string(" " * 16) 
 
 
 if __name__ == '__main__':
