@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import requests
+from requests.exceptions import RequestException, ConnectionError, Timeout
 from datetime import datetime
 import time
 import schedule
@@ -26,11 +27,14 @@ def get_electricity_price(date, hour):
         if response.status_code == 200:
             return response.json()
         else:
-            return f"VIRHE: KOODI {response.status_code}"
+            return "VIRHE"
+    except (ConnectionError, Timeout) as e:
+        # If it's a network-related error (connection or timeout), return "ODOTA HETKI"
+        return "ODOTA HETKI"
         
     # Any other error
     except Exception as e:    
-        return f"VIRHE: {e}"
+        return "VIRHE"
 
 
 
@@ -90,20 +94,24 @@ def display_on_lcd(data):
     # Clear the display before writing anything 
     lcd.clear() 
 
-    # Move the cursor to the first row, first column 
-    lcd.cursor_pos = (0, 0) 
-    lcd.write_string(data[0])
+    if isinstance(data, tuple):
+        # Move the cursor to the first row, first column 
+        lcd.cursor_pos = (0, 0) 
+        lcd.write_string(data[0])
 
-    lcd.cursor_pos = (1, 0) 
-    lcd.write_string(data[1])
-
-
-    # Sleep for 5 seconds to allow time for display 
-    time.sleep(5) 
-
+        lcd.cursor_pos = (1, 0) 
+        lcd.write_string(data[1])
+    else:
+        lcd.cursor_pos = (0, 0)
+        lcd.write_string(data[:16])  # Ensure it fits within 16 characters
+        
+        # If needed, clear the second row to prevent ghost text
+        lcd.cursor_pos = (1, 0)
+        lcd.write_string(" " * 16)  # Clear second row     
 
 
 if __name__ == '__main__':
+
     # Fetch and display the price immediately on startup
     data = fetch_and_print_price()
     display_on_lcd(data)
