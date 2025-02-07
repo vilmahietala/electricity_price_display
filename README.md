@@ -4,7 +4,7 @@
 
 This project is designed to display the hourly electricity price from the Finnish electricity market (spot price) on an LCD screen using a Raspberry Pi Zero W. The script fetches the price data from an API and displays it on the screen, automatically starting up when the Raspberry Pi is powered on.
 
-## The plan
+## Implementation Plan
 
 1. Find the Spot Price API for Electricity
     - The project uses an API to retrieve the current electricity price.
